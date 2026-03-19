@@ -33,15 +33,7 @@ class HudPreviewApp:
         self.selected_item = None
 
         # Resolution from settings
-        res = global_settings.get('Resolution', {})
-        fs = res.get('Fullscreen', '2560x1440')
-        if 'x' in str(fs):
-            parts = str(fs).split('x')
-            self.screen_w = int(parts[0])
-            self.screen_h = int(parts[1])
-        else:
-            self.screen_w = 2560
-            self.screen_h = 1440
+        self.screen_w, self.screen_h = self._parse_resolution(global_settings)
 
         self.zoom = 1.0
 
@@ -63,6 +55,22 @@ class HudPreviewApp:
             elements.append(f"HUD {len(char['HudElements'])}")
         detail = ', '.join(elements) if elements else '기본값'
         return f"캐릭터 {hex_id}  ({detail})"
+
+    def _parse_resolution(self, global_settings):
+        res = global_settings.get('Resolution', {})
+        fs = res.get('Fullscreen', '')
+        try:
+            parts = str(fs).split('x')
+            w, h = int(parts[0]), int(parts[1])
+            if w > 0 and h > 0:
+                return w, h
+        except (ValueError, IndexError):
+            pass
+        # Fallback: current monitor resolution
+        try:
+            return self.root.winfo_screenwidth(), self.root.winfo_screenheight()
+        except Exception:
+            return 2560, 1440
 
     # ── UI ─────────────────────────────────────────────────────────────
 
@@ -818,13 +826,8 @@ class HudPreviewApp:
             self.dat_path_label.config(text=path)
 
             # Refresh resolution
-            res = gs.get('Resolution', {})
-            fs = res.get('Fullscreen', '2560x1440')
-            if 'x' in str(fs):
-                parts = str(fs).split('x')
-                self.screen_w = int(parts[0])
-                self.screen_h = int(parts[1])
-                self.res_var.set(f"{self.screen_w}x{self.screen_h}")
+            self.screen_w, self.screen_h = self._parse_resolution(gs)
+            self.res_var.set(f"{self.screen_w}x{self.screen_h}")
 
             # Refresh character list
             names = [self._char_display_name(c) for c in self.characters]

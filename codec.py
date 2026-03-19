@@ -127,8 +127,8 @@ def decode_dat(dat_path, progress_cb=None):
         "TextLanguage": main_json.get("TextLanguage"),
         "LastSelectedServerInfo": main_json.get("LastSelectedServerInfo"),
         "Resolution": {
-            "Fullscreen": f"{main_json.get('LastFullscreenResolutionX')}x{main_json.get('LastFullscreenResolutionY')}",
-            "Windowed": f"{main_json.get('LastWindowedResolutionX')}x{main_json.get('LastWindowedResolutionY')}",
+            "Fullscreen": f"{main_json.get('LastFullscreenResolutionX', 2560)}x{main_json.get('LastFullscreenResolutionY', 1440)}",
+            "Windowed": f"{main_json.get('LastWindowedResolutionX', 1920)}x{main_json.get('LastWindowedResolutionY', 1080)}",
             "RefreshRate": main_json.get("GraphicDisplayRefreshRate"),
         },
         "GraphicTemplate": main_json.get("GraphicTemplate"),
